@@ -1,0 +1,14 @@
+{
+  "uuid": "REPLACE_WITH_YOUR_ROBOTHON_UUID",
+  "project_name": "Nuclear Glovebox Bimanual Teleoperation with Tactile Feedback",
+  "author": "kyzhang",
+  "description": "Dual-arm dexterous manipulation in a simulated nuclear glovebox environment with vision unavailable. Demonstrates tactile-feedback control, bimanual handoff, and in-hand reorientation.",
+  "repository": "https://github.com/kyzhang/Robothon-starter",
+  "submission_date": "2026-06-24",
+  "video_path": "demo.mp4",
+  "main_script": "main.py",
+  "mujoco_xml": "mjcf/glovebox_scene.xml",
+  "keywords": ["dexterity", "bimanual", "tactile", "teleoperation", "glovebox", "nuclear"],
+  "estimated_runtime": "~24 seconds",
+  "target_score": "93+"
+}
