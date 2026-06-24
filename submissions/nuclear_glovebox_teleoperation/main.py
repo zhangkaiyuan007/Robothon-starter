@@ -28,9 +28,10 @@ from submissions.nuclear_glovebox_teleoperation.src.visualization import (
     render_force_feedback,
     get_camera_config
 )
+from submissions.nuclear_glovebox_teleoperation.src.demo_video import VideoRecorder
 
 
-def run_simulation(duration: float = 30.0, render: bool = True) -> None:
+def run_simulation(duration: float = 30.0, render: bool = True, record_video: bool = True) -> None:
     """
     Run the nuclear glovebox teleoperation simulation.
 
@@ -40,6 +41,7 @@ def run_simulation(duration: float = 30.0, render: bool = True) -> None:
     Args:
         duration: Simulation duration in seconds (default 30.0).
         render: Whether to render the scene (default True).
+        record_video: Whether to record video to demo.mp4 (default True).
     """
     # Get the path to the MJCF file
     script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -59,11 +61,15 @@ def run_simulation(duration: float = 30.0, render: bool = True) -> None:
     executor = TaskExecutor(model, data, controller, sensor_reader)
 
     # Initialize renderer (even if render=False, we need it for the update_scene call)
-    renderer = mujoco.Renderer(model, height=480, width=640)
+    renderer = mujoco.Renderer(model, height=1080, width=1920)
 
     # Simulation parameters
     dt = model.opt.timestep  # Timestep from MJCF (typically 0.002)
     max_steps = int(duration / dt)
+
+    # Initialize video recorder
+    video_path = os.path.join(script_dir, "demo.mp4")
+    recorder = VideoRecorder(video_path) if record_video else None
 
     # Main simulation loop
     step_count = 0
@@ -94,7 +100,9 @@ def run_simulation(duration: float = 30.0, render: bool = True) -> None:
         # Update renderer every 10 steps (for 30fps video from 500Hz sim)
         if render and step_count % 10 == 0:
             renderer.update_scene(data)
-            renderer.render()
+            pixels = renderer.render()
+            if recorder:
+                recorder.add_frame(pixels)
 
         step_count += 1
 
@@ -108,6 +116,10 @@ def run_simulation(duration: float = 30.0, render: bool = True) -> None:
     print(f"  Final state: {final_state}")
     print(f"  Task complete: {is_complete}")
 
+    # Finalize video recording
+    if recorder:
+        recorder.finalize()
+
 
 if __name__ == "__main__":
-    run_simulation(duration=30.0, render=False)
+    run_simulation(duration=30.0, render=True, record_video=True)
