@@ -12,10 +12,10 @@
   <asset>
     <texture name="grid" type="2d" builtin="checker" rgb1="0.1 0.1 0.1" rgb2="0.9 0.9 0.9" width="300" height="300"/>
     <material name="grid" texture="grid" texrepeat="8 8" reflectance="0.7"/>
-    <material name="glovebox_material" rgb="0.8 0.8 0.8" reflectance="0.3"/>
-    <material name="hand_material" rgb="0.9 0.6 0.4" reflectance="0.2"/>
-    <material name="red" rgb="0.8 0.1 0.1" reflectance="0.2"/>
-    <material name="blue" rgb="0.1 0.1 0.8" reflectance="0.2"/>
+    <material name="glovebox_material" reflectance="0.3"/>
+    <material name="hand_material" reflectance="0.2"/>
+    <material name="red" reflectance="0.2"/>
+    <material name="blue" reflectance="0.2"/>
   </asset>
 
   <worldbody>
@@ -44,27 +44,27 @@
 
     <!-- Left Allegro Hand -->
     <body name="glovebox_left_hand" pos="-0.1 -0.3 0.5">
-      <inertial mass="1.0" diaginv="1 1 1"/>
+      <inertial pos="0 0 0" mass="1.0"/>
       <geom name="left_hand_base" type="box" size="0.05 0.04 0.03" material="hand_material"/>
 
       <!-- Include left hand kinematic structure -->
       <body name="left_hand_link_0" pos="0 0 0.05">
-        <inertial mass="0.1" diaginv="10 10 10"/>
+        <inertial pos="0 0 0" mass="0.1"/>
         <geom type="cylinder" size="0.01 0.03" material="hand_material"/>
         <joint name="left_hand_joint_0" type="hinge" axis="1 0 0" range="-1.57 1.57" damping="0.05"/>
 
         <body name="left_hand_link_1" pos="0 0 0.04">
-          <inertial mass="0.08" diaginv="12.5 12.5 12.5"/>
+          <inertial pos="0 0 0" mass="0.08"/>
           <geom type="cylinder" size="0.009 0.03" material="hand_material"/>
           <joint name="left_hand_joint_1" type="hinge" axis="1 0 0" range="-1.57 1.57" damping="0.05"/>
 
           <body name="left_hand_link_2" pos="0 0 0.035">
-            <inertial mass="0.06" diaginv="16.67 16.67 16.67"/>
+            <inertial pos="0 0 0" mass="0.06"/>
             <geom type="cylinder" size="0.008 0.025" material="hand_material"/>
             <joint name="left_hand_joint_2" type="hinge" axis="1 0 0" range="-1.57 1.57" damping="0.05"/>
 
             <body name="left_hand_link_3" pos="0 0 0.03">
-              <inertial mass="0.05" diaginv="20 20 20"/>
+              <inertial pos="0 0 0" mass="0.05"/>
               <geom type="cylinder" size="0.007 0.02" material="hand_material"/>
               <joint name="left_hand_joint_3" type="hinge" axis="1 0 0" range="-1.57 1.57" damping="0.05"/>
 
@@ -77,22 +77,22 @@
 
       <!-- Index finger chain -->
       <body name="left_hand_link_4" pos="0.02 0 0.05">
-        <inertial mass="0.1" diaginv="10 10 10"/>
+        <inertial pos="0 0 0" mass="0.1"/>
         <geom type="cylinder" size="0.01 0.03" material="hand_material"/>
         <joint name="left_hand_joint_4" type="hinge" axis="1 0 0" range="-1.57 1.57" damping="0.05"/>
 
         <body name="left_hand_link_5" pos="0 0 0.04">
-          <inertial mass="0.08" diaginv="12.5 12.5 12.5"/>
+          <inertial pos="0 0 0" mass="0.08"/>
           <geom type="cylinder" size="0.009 0.03" material="hand_material"/>
           <joint name="left_hand_joint_5" type="hinge" axis="1 0 0" range="-1.57 1.57" damping="0.05"/>
 
           <body name="left_hand_link_6" pos="0 0 0.035">
-            <inertial mass="0.06" diaginv="16.67 16.67 16.67"/>
+            <inertial pos="0 0 0" mass="0.06"/>
             <geom type="cylinder" size="0.008 0.025" material="hand_material"/>
             <joint name="left_hand_joint_6" type="hinge" axis="1 0 0" range="-1.57 1.57" damping="0.05"/>
 
             <body name="left_hand_link_7" pos="0 0 0.03">
-              <inertial mass="0.05" diaginv="20 20 20"/>
+              <inertial pos="0 0 0" mass="0.05"/>
               <geom type="cylinder" size="0.007 0.02" material="hand_material"/>
               <joint name="left_hand_joint_7" type="hinge" axis="1 0 0" range="-1.57 1.57" damping="0.05"/>
 
@@ -105,22 +105,22 @@
 
       <!-- Middle finger chain -->
       <body name="left_hand_link_8" pos="0.04 0 0.05">
-        <inertial mass="0.1" diaginv="10 10 10"/>
+        <inertial pos="0 0 0" mass="0.1"/>
         <geom type="cylinder" size="0.01 0.03" material="hand_material"/>
         <joint name="left_hand_joint_8" type="hinge" axis="1 0 0" range="-1.57 1.57" damping="0.05"/>
 
         <body name="left_hand_link_9" pos="0 0 0.04">
-          <inertial mass="0.08" diaginv="12.5 12.5 12.5"/>
+          <inertial pos="0 0 0" mass="0.08"/>
           <geom type="cylinder" size="0.009 0.03" material="hand_material"/>
           <joint name="left_hand_joint_9" type="hinge" axis="1 0 0" range="-1.57 1.57" damping="0.05"/>
 
           <body name="left_hand_link_10" pos="0 0 0.035">
-            <inertial mass="0.06" diaginv="16.67 16.67 16.67"/>
+            <inertial pos="0 0 0" mass="0.06"/>
             <geom type="cylinder" size="0.008 0.025" material="hand_material"/>
             <joint name="left_hand_joint_10" type="hinge" axis="1 0 0" range="-1.57 1.57" damping="0.05"/>
 
             <body name="left_hand_link_11" pos="0 0 0.03">
-              <inertial mass="0.05" diaginv="20 20 20"/>
+              <inertial pos="0 0 0" mass="0.05"/>
               <geom type="cylinder" size="0.007 0.02" material="hand_material"/>
               <joint name="left_hand_joint_11" type="hinge" axis="1 0 0" range="-1.57 1.57" damping="0.05"/>
 
@@ -133,22 +133,22 @@
 
       <!-- Ring finger chain -->
       <body name="left_hand_link_12" pos="0.06 0 0.05">
-        <inertial mass="0.1" diaginv="10 10 10"/>
+        <inertial pos="0 0 0" mass="0.1"/>
         <geom type="cylinder" size="0.01 0.03" material="hand_material"/>
         <joint name="left_hand_joint_12" type="hinge" axis="1 0 0" range="-1.57 1.57" damping="0.05"/>
 
         <body name="left_hand_link_13" pos="0 0 0.04">
-          <inertial mass="0.08" diaginv="12.5 12.5 12.5"/>
+          <inertial pos="0 0 0" mass="0.08"/>
           <geom type="cylinder" size="0.009 0.03" material="hand_material"/>
           <joint name="left_hand_joint_13" type="hinge" axis="1 0 0" range="-1.57 1.57" damping="0.05"/>
 
           <body name="left_hand_link_14" pos="0 0 0.035">
-            <inertial mass="0.06" diaginv="16.67 16.67 16.67"/>
+            <inertial pos="0 0 0" mass="0.06"/>
             <geom type="cylinder" size="0.008 0.025" material="hand_material"/>
             <joint name="left_hand_joint_14" type="hinge" axis="1 0 0" range="-1.57 1.57" damping="0.05"/>
 
             <body name="left_hand_link_15" pos="0 0 0.03">
-              <inertial mass="0.05" diaginv="20 20 20"/>
+              <inertial pos="0 0 0" mass="0.05"/>
               <geom type="cylinder" size="0.007 0.02" material="hand_material"/>
               <joint name="left_hand_joint_15" type="hinge" axis="1 0 0" range="-1.57 1.57" damping="0.05"/>
 
@@ -162,27 +162,27 @@
 
     <!-- Right Allegro Hand (mirror of left) -->
     <body name="glovebox_right_hand" pos="0.1 -0.3 0.5">
-      <inertial mass="1.0" diaginv="1 1 1"/>
+      <inertial pos="0 0 0" mass="1.0"/>
       <geom name="right_hand_base" type="box" size="0.05 0.04 0.03" material="hand_material"/>
 
       <!-- Thumb chain -->
       <body name="right_hand_link_0" pos="0 0 0.05">
-        <inertial mass="0.1" diaginv="10 10 10"/>
+        <inertial pos="0 0 0" mass="0.1"/>
         <geom type="cylinder" size="0.01 0.03" material="hand_material"/>
         <joint name="right_hand_joint_0" type="hinge" axis="1 0 0" range="-1.57 1.57" damping="0.05"/>
 
         <body name="right_hand_link_1" pos="0 0 0.04">
-          <inertial mass="0.08" diaginv="12.5 12.5 12.5"/>
+          <inertial pos="0 0 0" mass="0.08"/>
           <geom type="cylinder" size="0.009 0.03" material="hand_material"/>
           <joint name="right_hand_joint_1" type="hinge" axis="1 0 0" range="-1.57 1.57" damping="0.05"/>
 
           <body name="right_hand_link_2" pos="0 0 0.035">
-            <inertial mass="0.06" diaginv="16.67 16.67 16.67"/>
+            <inertial pos="0 0 0" mass="0.06"/>
             <geom type="cylinder" size="0.008 0.025" material="hand_material"/>
             <joint name="right_hand_joint_2" type="hinge" axis="1 0 0" range="-1.57 1.57" damping="0.05"/>
 
             <body name="right_hand_link_3" pos="0 0 0.03">
-              <inertial mass="0.05" diaginv="20 20 20"/>
+              <inertial pos="0 0 0" mass="0.05"/>
               <geom type="cylinder" size="0.007 0.02" material="hand_material"/>
               <joint name="right_hand_joint_3" type="hinge" axis="1 0 0" range="-1.57 1.57" damping="0.05"/>
 
@@ -195,22 +195,22 @@
 
       <!-- Index finger chain -->
       <body name="right_hand_link_4" pos="-0.02 0 0.05">
-        <inertial mass="0.1" diaginv="10 10 10"/>
+        <inertial pos="0 0 0" mass="0.1"/>
         <geom type="cylinder" size="0.01 0.03" material="hand_material"/>
         <joint name="right_hand_joint_4" type="hinge" axis="1 0 0" range="-1.57 1.57" damping="0.05"/>
 
         <body name="right_hand_link_5" pos="0 0 0.04">
-          <inertial mass="0.08" diaginv="12.5 12.5 12.5"/>
+          <inertial pos="0 0 0" mass="0.08"/>
           <geom type="cylinder" size="0.009 0.03" material="hand_material"/>
           <joint name="right_hand_joint_5" type="hinge" axis="1 0 0" range="-1.57 1.57" damping="0.05"/>
 
           <body name="right_hand_link_6" pos="0 0 0.035">
-            <inertial mass="0.06" diaginv="16.67 16.67 16.67"/>
+            <inertial pos="0 0 0" mass="0.06"/>
             <geom type="cylinder" size="0.008 0.025" material="hand_material"/>
             <joint name="right_hand_joint_6" type="hinge" axis="1 0 0" range="-1.57 1.57" damping="0.05"/>
 
             <body name="right_hand_link_7" pos="0 0 0.03">
-              <inertial mass="0.05" diaginv="20 20 20"/>
+              <inertial pos="0 0 0" mass="0.05"/>
               <geom type="cylinder" size="0.007 0.02" material="hand_material"/>
               <joint name="right_hand_joint_7" type="hinge" axis="1 0 0" range="-1.57 1.57" damping="0.05"/>
 
@@ -223,22 +223,22 @@
 
       <!-- Middle finger chain -->
       <body name="right_hand_link_8" pos="-0.04 0 0.05">
-        <inertial mass="0.1" diaginv="10 10 10"/>
+        <inertial pos="0 0 0" mass="0.1"/>
         <geom type="cylinder" size="0.01 0.03" material="hand_material"/>
         <joint name="right_hand_joint_8" type="hinge" axis="1 0 0" range="-1.57 1.57" damping="0.05"/>
 
         <body name="right_hand_link_9" pos="0 0 0.04">
-          <inertial mass="0.08" diaginv="12.5 12.5 12.5"/>
+          <inertial pos="0 0 0" mass="0.08"/>
           <geom type="cylinder" size="0.009 0.03" material="hand_material"/>
           <joint name="right_hand_joint_9" type="hinge" axis="1 0 0" range="-1.57 1.57" damping="0.05"/>
 
           <body name="right_hand_link_10" pos="0 0 0.035">
-            <inertial mass="0.06" diaginv="16.67 16.67 16.67"/>
+            <inertial pos="0 0 0" mass="0.06"/>
             <geom type="cylinder" size="0.008 0.025" material="hand_material"/>
             <joint name="right_hand_joint_10" type="hinge" axis="1 0 0" range="-1.57 1.57" damping="0.05"/>
 
             <body name="right_hand_link_11" pos="0 0 0.03">
-              <inertial mass="0.05" diaginv="20 20 20"/>
+              <inertial pos="0 0 0" mass="0.05"/>
               <geom type="cylinder" size="0.007 0.02" material="hand_material"/>
               <joint name="right_hand_joint_11" type="hinge" axis="1 0 0" range="-1.57 1.57" damping="0.05"/>
 
@@ -251,22 +251,22 @@
 
       <!-- Ring finger chain -->
       <body name="right_hand_link_12" pos="-0.06 0 0.05">
-        <inertial mass="0.1" diaginv="10 10 10"/>
+        <inertial pos="0 0 0" mass="0.1"/>
         <geom type="cylinder" size="0.01 0.03" material="hand_material"/>
         <joint name="right_hand_joint_12" type="hinge" axis="1 0 0" range="-1.57 1.57" damping="0.05"/>
 
         <body name="right_hand_link_13" pos="0 0 0.04">
-          <inertial mass="0.08" diaginv="12.5 12.5 12.5"/>
+          <inertial pos="0 0 0" mass="0.08"/>
           <geom type="cylinder" size="0.009 0.03" material="hand_material"/>
           <joint name="right_hand_joint_13" type="hinge" axis="1 0 0" range="-1.57 1.57" damping="0.05"/>
 
           <body name="right_hand_link_14" pos="0 0 0.035">
-            <inertial mass="0.06" diaginv="16.67 16.67 16.67"/>
+            <inertial pos="0 0 0" mass="0.06"/>
             <geom type="cylinder" size="0.008 0.025" material="hand_material"/>
             <joint name="right_hand_joint_14" type="hinge" axis="1 0 0" range="-1.57 1.57" damping="0.05"/>
 
             <body name="right_hand_link_15" pos="0 0 0.03">
-              <inertial mass="0.05" diaginv="20 20 20"/>
+              <inertial pos="0 0 0" mass="0.05"/>
               <geom type="cylinder" size="0.007 0.02" material="hand_material"/>
               <joint name="right_hand_joint_15" type="hinge" axis="1 0 0" range="-1.57 1.57" damping="0.05"/>
 
@@ -280,7 +280,7 @@
 
     <!-- Sample vial (object to manipulate) -->
     <body name="sample_vial" pos="-0.15 0.3 0.1">
-      <inertial mass="0.05" diaginv="400 400 400"/>
+      <inertial pos="0 0 0" mass="0.05"/>
       <!-- Cylinder body -->
       <geom type="cylinder" size="0.01 0.03" material="red"/>
       <!-- Box cap -->
@@ -289,7 +289,7 @@
 
     <!-- Shielded container (payload) -->
     <body name="shielded_container" pos="0.15 0.3 0.05">
-      <inertial mass="0.2" diaginv="100 100 100"/>
+      <inertial pos="0 0 0" mass="0.2"/>
       <geom type="box" size="0.06 0.08 0.04" material="blue"/>
     </body>
   </worldbody>
