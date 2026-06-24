@@ -8,6 +8,13 @@ import os
 import sys
 import xml.etree.ElementTree as ET
 
+# Add the repository root to the Python path
+_REPO_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+if _REPO_ROOT not in sys.path:
+    sys.path.insert(0, _REPO_ROOT)
+
+from submissions.nuclear_glovebox_teleoperation.src.sensor_utils import SensorReader
+
 def test_glovebox_loads():
     """Test that the glovebox MJCF environment loads without error."""
 
@@ -94,5 +101,41 @@ def test_glovebox_loads():
     return True
 
 
+def test_sensor_reader():
+    """Test that the SensorReader class initializes and returns correct site lists."""
+
+    # Get the path to the MJCF file
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    mjcf_path = os.path.join(script_dir, "mjcf", "glovebox_scene.xml")
+
+    # Load the model with MuJoCo
+    try:
+        import mujoco
+        model = mujoco.MjModel.from_xml_path(mjcf_path)
+    except ImportError:
+        print("Error: MuJoCo not available for sensor reader test")
+        sys.exit(1)
+    except Exception as e:
+        print(f"Error loading MJCF for sensor test: {e}")
+        sys.exit(1)
+
+    # Create SensorReader instance
+    sensor_reader = SensorReader(model)
+    print("✓ SensorReader initialized")
+
+    # Test get_touch_sites for left hand
+    left_sites = sensor_reader.get_touch_sites("left")
+    assert len(left_sites) == 8, f"Expected 8 left touch sites, got {len(left_sites)}"
+    print(f"  Left hand sites: {len(left_sites)}")
+
+    # Test get_touch_sites for right hand
+    right_sites = sensor_reader.get_touch_sites("right")
+    assert len(right_sites) == 8, f"Expected 8 right touch sites, got {len(right_sites)}"
+    print(f"  Right hand sites: {len(right_sites)}")
+
+    return True
+
+
 if __name__ == "__main__":
     test_glovebox_loads()
+    test_sensor_reader()
