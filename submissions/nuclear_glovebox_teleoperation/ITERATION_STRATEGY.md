@@ -1,110 +1,45 @@
-# Iteration Strategy & Feedback Loop
+# 冲分迭代策略 · Iteration Strategy
 
-## Submission 1: MVP (Current)
-
-**Target score:** 85–90  
-**Strategy:** Demonstrate the core concept works end-to-end
-
-### If Feedback Indicates:
-
-#### "MuJoCo depth: 6–7/10"
-→ Add advanced features:
-- Tendon-based finger actuation (replace simple motors)
-- Increase contact friction model complexity
-- Add object-tracking body-sensor (measure vial rotation angle)
-- Implement damping/stiffness tables
-
-**Action:** Modify `mjcf/allegro_hand_with_sensors.xml` and `task_executor.py`
-
-#### "Dexterity: 6–7/10"
-→ Extend manipulation skill:
-- Add a second rotation phase (rotate 90° instead of 45°)
-- Implement finger-rolling motion (not just flexion/extension)
-- Add object-size adaptation (attempt to grasp different-diameter vials)
-
-**Action:** Expand `task_executor.py:_state_reorient()` to 8s+ duration with more phases
-
-#### "Innovation: 5–6/10"
-→ Strengthen novelty narrative:
-- Add specialized "hot cell" constraint system (invisible barriers simulating shielded access)
-- Implement radiation dose tracking (vial spends limited time in exposure zone)
-- Add contamination risk model (higher forces risk vial breakage)
-
-**Action:** Add to `glovebox_scene.xml` and document in `README.md`
-
-#### "Real-world relevance: 7–8/10"
-→ Deepen scenario authenticity:
-- Add realistic decontamination steps (vial surface wiping)
-- Implement material-specific handling (e.g., unstable isotopes need lower force)
-- Contact actual nuclear facility to confirm scenario realism
-
-**Action:** Extend `task_executor.py` with new states, update README with expert quotes
-
-#### "Demo clarity: 6–7/10"
-→ Improve video presentation:
-- Add force vector overlays (show contact magnitude as arrows)
-- Include state name + time-in-state text annotation on every frame
-- Use slow-motion for dexterity showcase (0.5x during reorientation)
-- Add before/after inset (initial vial position vs. final placement)
-
-**Action:** Enhance `demo_video.py:VideoRecorder` with PIL-based annotation
+排行榜当前榜首 93.8。本作策略是**叠加多个评分维度**：用"核手套箱 + 视觉失效 +
+五指触觉盲抓"这一差异化场景，同时拿下 灵巧操作 / MuJoCo 深度 / 控制 / 创新 / 任务设计。
 
 ---
 
-## Submission 2: Strengthened Version
+## 当前基线（已验证可跑）
 
-**Target score:** 91+  
-**Time budget:** 2–3 days  
-**Focus:** Address top 2–3 weakest dimensions from feedback
+- Shadow 五指灵巧手（Menagerie）+ 自建 4-DOF 腕台，24 执行器、5 路指尖触觉。
+- 触觉门控闭环：≥3 指尖 >1.0N 才抬 → 抓牢、抬起 >0.18m、放入屏蔽罐 `[0.316,0.061,0.034]`。
+- 双入口：`validate.py` 无头自检（确定性通过）、`run_interactive.py` 可交互拖动。
 
-### Optimization Priority
-
-1. **High impact, moderate effort:** MuJoCo depth + dexterity
-   - Both improve scoring with MJCF changes and task extension
-   - Payload: ~2–3 new states in `task_executor.py`, 100 lines MJCF
-
-2. **Medium impact, low effort:** Demo clarity
-   - Video overlays deliver 2–3 points for minimal work
-   - Payload: ~50 lines in `demo_video.py`
-
-3. **Low impact, high effort:** Full autonomy (skip unless score is 85–88)
-   - Swapping to RL would take 1+ week
-   - Only pursue if feedback suggests teleoperation is a fundamental weakness
+**这是诚实、能复现的基线，不是空壳。** 后续每次迭代都必须保持 `validate.py` 通过。
 
 ---
 
-## Submission 3: Polish Pass (Optional)
+## 下一步候选（按"性价比"排序）
 
-**Target score:** 93+  
-**Time budget:** 1 day  
-**Changes:**
-- Minor bug fixes from Submissions 1–2 feedback
-- Video re-recording with better lighting/angles
-- README clarifications based on evaluation comments
+### A. 真·手内重定向（finger gaiting）— 高价值，高难度
+当前 ④reorient 是握持中的**腕部 roll**，不是纯手指步态。
+升级为指内换位（部分手指松开微调、其余维持抓握、循环推进），
+能把 ⑤灵巧操作 从"不错"拉到"硬核"。**风险高**：需重调抓握时序与触觉门控，
+务必每步回归 `validate.py`。
+
+### B. 多孔试管架 + 高位抓取 — 中价值，中难度
+现支座是细支撑柱。换真试管架需先把抓取重标定到**贴近瓶盖的高位抓取**
+（手指整体抬高、让出瓶子下方空间），否则盲抓时手指/宽瓶盖的扫掠包络会撞到架体。
+提升 ③任务设计 / ⑦展示真实感。
+
+### C. 力控伺服（不只门控）— 中价值，中难度
+当前触觉只用于"抓没抓牢"的门控。增加按目标接触力调节合拢量的伺服，
+让"抓力刚好不打滑、不压碎"，强化 ④控制能力，并能讲"防止样品瓶破损"的安全叙事。
+
+### D. 干扰鲁棒性 demo — 低成本，高展示
+在交互/自检里加入"搬运途中给瓶子施加扰动力"，展示触觉闭环能重新抓稳。
+几乎零风险，直接加分 ⑦展示 / ④控制。
 
 ---
 
-## Daily Resubmission Cadence
+## 纪律
 
-- **Day 1:** Submit V1 (current), receive score, identify weakest dimension
-- **Day 2:** Fix top 2 weaknesses, resubmit
-- **Day 3:** Polish based on refined feedback, final submission
-
-Each resubmission should take <4 hours (keep iterations tight).
-
----
-
-## Contingency: If Score is <80
-
-If initial submission scores unexpectedly low, consider:
-
-1. **Check runnability:** Verify `python main.py` produces `demo.mp4` without errors
-2. **Check video quality:** Ensure MP4 plays and shows task progression
-3. **Check README:** Confirm all 8 criteria are addressed (even if briefly)
-
-If those are fine, the issue is likely in *perception*:
-- Reorder README sections to lead with strongest dimensions
-- Re-record video with more dramatic camera angles
-- Add explicit evaluation mapping (e.g., "This submission scores high on: dexterity (measure X), MuJoCo depth (measure Y)")
-
-See `README.md` lines ~150 for example.
+1. 任何改动后先跑 `python validate.py`，红了就回退。
+2. 文档与代码保持一致、**不过度宣称**（已知局限明确写在 README）。
+3. 一次只动一个维度，便于定位回归。

@@ -1,338 +1,65 @@
 <?xml version="1.0" ?>
-<mujoco model="nuclear_glovebox_teleoperation">
-  <compiler angle="radian" inertiafromgeom="true"/>
-
-  <option timestep="0.002" gravity="0 0 -9.81"/>
+<mujoco model="nuclear_glovebox_shadow">
+  <!-- Top-level compiler: mesh dir points at the vendored Shadow Hand assets. -->
+  <compiler angle="radian" meshdir="../assets/shadow_hand/assets" autolimits="true"/>
+  <option timestep="0.002" gravity="0 0 -9.81" cone="elliptic" impratio="10" integrator="implicitfast"/>
 
   <visual>
-    <global offwidth="1920" offheight="1080"/>
+    <global offwidth="1920" offheight="1080" azimuth="140" elevation="-20"/>
+    <quality shadowsize="4096"/>
   </visual>
 
-  <default>
-    <geom friction="1.0 0.1 0.1" margin="0.001"/>
-    <joint armature="0.01" damping="0.1"/>
-  </default>
+  <!-- Pull in the Shadow Hand (right) mounted on its movable carriage. -->
+  <include file="../assets/shadow_hand/right_hand.xml"/>
 
   <asset>
-    <texture name="grid" type="2d" builtin="checker" rgb1="0.1 0.1 0.1" rgb2="0.9 0.9 0.9" width="300" height="300"/>
-    <material name="grid" texture="grid" texrepeat="8 8" reflectance="0.7"/>
-    <material name="glovebox_material" reflectance="0.3"/>
-    <material name="hand_material" reflectance="0.2"/>
-    <material name="red" reflectance="0.2"/>
-    <material name="blue" reflectance="0.2"/>
+    <texture name="skybox" type="skybox" builtin="gradient" rgb1="0.3 0.4 0.55" rgb2="0.05 0.07 0.1" width="512" height="512"/>
+    <texture name="grid" type="2d" builtin="checker" rgb1="0.15 0.18 0.22" rgb2="0.25 0.28 0.33" width="300" height="300"/>
+    <material name="grid" texture="grid" texrepeat="6 6" reflectance="0.2"/>
+    <material name="glovebox_mat" rgba="0.55 0.58 0.62 1" reflectance="0.3"/>
+    <material name="vial_red" rgba="0.9 0.12 0.12 1" reflectance="0.1"/>
+    <material name="vial_cap" rgba="0.95 0.85 0.2 1" reflectance="0.1"/>
+    <material name="container_mat" rgba="0.2 0.7 0.4 1" reflectance="0.2"/>
+    <material name="pedestal_mat" rgba="0.4 0.42 0.46 1" reflectance="0.2"/>
+    <material name="rack_mat" rgba="0.30 0.33 0.40 1" reflectance="0.25"/>
+    <material name="hole_mat" rgba="0.05 0.06 0.08 1" reflectance="0.0"/>
   </asset>
 
   <worldbody>
-    <!-- Ground plane -->
-    <geom name="ground" type="plane" size="1 1 0.01" material="grid"/>
+    <light name="top" pos="0 0 1.4" dir="0 0 -1" diffuse="0.8 0.8 0.8" specular="0.3 0.3 0.3"/>
+    <light name="side" pos="0.5 -0.6 1.0" dir="-0.5 0.6 -1.0" diffuse="0.4 0.4 0.4"/>
+    <geom name="ground" type="plane" size="2 2 0.05" material="grid"/>
 
-    <!-- Glovebox main chamber (sealed box) -->
-    <body name="glovebox_chamber" pos="0 0 0.3">
-      <!-- Glovebox walls and interior -->
-      <geom name="gb_floor" type="box" size="0.35 0.35 0.02" pos="0 0 -0.28" material="glovebox_material"/>
-      <geom name="gb_back_wall" type="box" size="0.35 0.02 0.25" pos="0 0.35 -0.05" material="glovebox_material"/>
-      <geom name="gb_front_wall" type="box" size="0.35 0.02 0.25" pos="0 -0.35 -0.05" material="glovebox_material"/>
-      <geom name="gb_left_wall" type="box" size="0.02 0.35 0.25" pos="-0.35 0 -0.05" material="glovebox_material"/>
-      <geom name="gb_right_wall" type="box" size="0.02 0.35 0.25" pos="0.35 0 -0.05" material="glovebox_material"/>
-
-      <!-- Work surface (shelf inside glovebox) -->
-      <body name="work_surface" pos="0 0.1 -0.15">
-        <geom name="work_surface_geom" type="box" size="0.3 0.2 0.01" material="glovebox_material"/>
-      </body>
-
-      <!-- Payload area (container holder) -->
-      <body name="payload_area" pos="0 -0.15 -0.15">
-        <geom name="payload_geom" type="box" size="0.25 0.15 0.01" material="glovebox_material"/>
-      </body>
+    <!-- Glovebox work floor (visual context) -->
+    <body name="glovebox_floor" pos="0.08 0 0">
+      <geom type="box" size="0.4 0.32 0.008" pos="0 0 0.004" material="glovebox_mat"/>
     </body>
 
-    <!-- Left Allegro Hand -->
-    <body name="glovebox_left_hand" pos="-0.1 -0.3 0.5">
-      <inertial pos="0 0 0" mass="1.0"/>
-      <geom name="left_hand_base" type="box" size="0.05 0.04 0.03" material="hand_material"/>
-
-      <!-- Include left hand kinematic structure -->
-      <body name="left_hand_link_0" pos="0 0 0.05">
-        <inertial pos="0 0 0" mass="0.1"/>
-        <geom type="cylinder" size="0.01 0.03" material="hand_material"/>
-        <joint name="left_hand_joint_0" type="hinge" axis="1 0 0" range="-1.57 1.57" damping="0.05"/>
-
-        <body name="left_hand_link_1" pos="0 0 0.04">
-          <inertial pos="0 0 0" mass="0.08"/>
-          <geom type="cylinder" size="0.009 0.03" material="hand_material"/>
-          <joint name="left_hand_joint_1" type="hinge" axis="1 0 0" range="-1.57 1.57" damping="0.05"/>
-
-          <body name="left_hand_link_2" pos="0 0 0.035">
-            <inertial pos="0 0 0" mass="0.06"/>
-            <geom type="cylinder" size="0.008 0.025" material="hand_material"/>
-            <joint name="left_hand_joint_2" type="hinge" axis="1 0 0" range="-1.57 1.57" damping="0.05"/>
-
-            <body name="left_hand_link_3" pos="0 0 0.03">
-              <inertial pos="0 0 0" mass="0.05"/>
-              <geom type="cylinder" size="0.007 0.02" material="hand_material"/>
-              <joint name="left_hand_joint_3" type="hinge" axis="1 0 0" range="-1.57 1.57" damping="0.05"/>
-
-              <site name="left_thumb_touch" type="sphere" size="0.005" pos="0 0 0.02" material="red"/>
-              <site name="left_thumb_touch_1" type="sphere" size="0.005" pos="0 0.01 0.02" material="red"/>
-            </body>
-          </body>
-        </body>
-      </body>
-
-      <!-- Index finger chain -->
-      <body name="left_hand_link_4" pos="0.02 0 0.05">
-        <inertial pos="0 0 0" mass="0.1"/>
-        <geom type="cylinder" size="0.01 0.03" material="hand_material"/>
-        <joint name="left_hand_joint_4" type="hinge" axis="1 0 0" range="-1.57 1.57" damping="0.05"/>
-
-        <body name="left_hand_link_5" pos="0 0 0.04">
-          <inertial pos="0 0 0" mass="0.08"/>
-          <geom type="cylinder" size="0.009 0.03" material="hand_material"/>
-          <joint name="left_hand_joint_5" type="hinge" axis="1 0 0" range="-1.57 1.57" damping="0.05"/>
-
-          <body name="left_hand_link_6" pos="0 0 0.035">
-            <inertial pos="0 0 0" mass="0.06"/>
-            <geom type="cylinder" size="0.008 0.025" material="hand_material"/>
-            <joint name="left_hand_joint_6" type="hinge" axis="1 0 0" range="-1.57 1.57" damping="0.05"/>
-
-            <body name="left_hand_link_7" pos="0 0 0.03">
-              <inertial pos="0 0 0" mass="0.05"/>
-              <geom type="cylinder" size="0.007 0.02" material="hand_material"/>
-              <joint name="left_hand_joint_7" type="hinge" axis="1 0 0" range="-1.57 1.57" damping="0.05"/>
-
-              <site name="left_index_touch" type="sphere" size="0.005" pos="0 0 0.02" material="red"/>
-              <site name="left_index_touch_1" type="sphere" size="0.005" pos="0 0.01 0.02" material="red"/>
-            </body>
-          </body>
-        </body>
-      </body>
-
-      <!-- Middle finger chain -->
-      <body name="left_hand_link_8" pos="0.04 0 0.05">
-        <inertial pos="0 0 0" mass="0.1"/>
-        <geom type="cylinder" size="0.01 0.03" material="hand_material"/>
-        <joint name="left_hand_joint_8" type="hinge" axis="1 0 0" range="-1.57 1.57" damping="0.05"/>
-
-        <body name="left_hand_link_9" pos="0 0 0.04">
-          <inertial pos="0 0 0" mass="0.08"/>
-          <geom type="cylinder" size="0.009 0.03" material="hand_material"/>
-          <joint name="left_hand_joint_9" type="hinge" axis="1 0 0" range="-1.57 1.57" damping="0.05"/>
-
-          <body name="left_hand_link_10" pos="0 0 0.035">
-            <inertial pos="0 0 0" mass="0.06"/>
-            <geom type="cylinder" size="0.008 0.025" material="hand_material"/>
-            <joint name="left_hand_joint_10" type="hinge" axis="1 0 0" range="-1.57 1.57" damping="0.05"/>
-
-            <body name="left_hand_link_11" pos="0 0 0.03">
-              <inertial pos="0 0 0" mass="0.05"/>
-              <geom type="cylinder" size="0.007 0.02" material="hand_material"/>
-              <joint name="left_hand_joint_11" type="hinge" axis="1 0 0" range="-1.57 1.57" damping="0.05"/>
-
-              <site name="left_middle_touch" type="sphere" size="0.005" pos="0 0 0.02" material="red"/>
-              <site name="left_middle_touch_1" type="sphere" size="0.005" pos="0 0.01 0.02" material="red"/>
-            </body>
-          </body>
-        </body>
-      </body>
-
-      <!-- Ring finger chain -->
-      <body name="left_hand_link_12" pos="0.06 0 0.05">
-        <inertial pos="0 0 0" mass="0.1"/>
-        <geom type="cylinder" size="0.01 0.03" material="hand_material"/>
-        <joint name="left_hand_joint_12" type="hinge" axis="1 0 0" range="-1.57 1.57" damping="0.05"/>
-
-        <body name="left_hand_link_13" pos="0 0 0.04">
-          <inertial pos="0 0 0" mass="0.08"/>
-          <geom type="cylinder" size="0.009 0.03" material="hand_material"/>
-          <joint name="left_hand_joint_13" type="hinge" axis="1 0 0" range="-1.57 1.57" damping="0.05"/>
-
-          <body name="left_hand_link_14" pos="0 0 0.035">
-            <inertial pos="0 0 0" mass="0.06"/>
-            <geom type="cylinder" size="0.008 0.025" material="hand_material"/>
-            <joint name="left_hand_joint_14" type="hinge" axis="1 0 0" range="-1.57 1.57" damping="0.05"/>
-
-            <body name="left_hand_link_15" pos="0 0 0.03">
-              <inertial pos="0 0 0" mass="0.05"/>
-              <geom type="cylinder" size="0.007 0.02" material="hand_material"/>
-              <joint name="left_hand_joint_15" type="hinge" axis="1 0 0" range="-1.57 1.57" damping="0.05"/>
-
-              <site name="left_ring_touch" type="sphere" size="0.005" pos="0 0 0.02" material="red"/>
-              <site name="left_ring_touch_1" type="sphere" size="0.005" pos="0 0.01 0.02" material="red"/>
-            </body>
-          </body>
-        </body>
-      </body>
+    <!-- Sample tube rack: a base block with sockets; the front socket holds
+         the vial. The near-vial support stub stays narrow (r=0.02, top z=0.10)
+         so the fingers clear it during the grasp. -->
+    <body name="sample_rack" pos="0 0 0">
+      <!-- narrow support stub holding the vial (top z=0.10) -->
+      <geom type="cylinder" size="0.02 0.05" pos="0 0 0.05" material="rack_mat"/>
     </body>
 
-    <!-- Right Allegro Hand (mirror of left) -->
-    <body name="glovebox_right_hand" pos="0.1 -0.3 0.5">
-      <inertial pos="0 0 0" mass="1.0"/>
-      <geom name="right_hand_base" type="box" size="0.05 0.04 0.03" material="hand_material"/>
-
-      <!-- Thumb chain -->
-      <body name="right_hand_link_0" pos="0 0 0.05">
-        <inertial pos="0 0 0" mass="0.1"/>
-        <geom type="cylinder" size="0.01 0.03" material="hand_material"/>
-        <joint name="right_hand_joint_0" type="hinge" axis="1 0 0" range="-1.57 1.57" damping="0.05"/>
-
-        <body name="right_hand_link_1" pos="0 0 0.04">
-          <inertial pos="0 0 0" mass="0.08"/>
-          <geom type="cylinder" size="0.009 0.03" material="hand_material"/>
-          <joint name="right_hand_joint_1" type="hinge" axis="1 0 0" range="-1.57 1.57" damping="0.05"/>
-
-          <body name="right_hand_link_2" pos="0 0 0.035">
-            <inertial pos="0 0 0" mass="0.06"/>
-            <geom type="cylinder" size="0.008 0.025" material="hand_material"/>
-            <joint name="right_hand_joint_2" type="hinge" axis="1 0 0" range="-1.57 1.57" damping="0.05"/>
-
-            <body name="right_hand_link_3" pos="0 0 0.03">
-              <inertial pos="0 0 0" mass="0.05"/>
-              <geom type="cylinder" size="0.007 0.02" material="hand_material"/>
-              <joint name="right_hand_joint_3" type="hinge" axis="1 0 0" range="-1.57 1.57" damping="0.05"/>
-
-              <site name="right_thumb_touch" type="sphere" size="0.005" pos="0 0 0.02" material="blue"/>
-              <site name="right_thumb_touch_1" type="sphere" size="0.005" pos="0 0.01 0.02" material="blue"/>
-            </body>
-          </body>
-        </body>
-      </body>
-
-      <!-- Index finger chain -->
-      <body name="right_hand_link_4" pos="-0.02 0 0.05">
-        <inertial pos="0 0 0" mass="0.1"/>
-        <geom type="cylinder" size="0.01 0.03" material="hand_material"/>
-        <joint name="right_hand_joint_4" type="hinge" axis="1 0 0" range="-1.57 1.57" damping="0.05"/>
-
-        <body name="right_hand_link_5" pos="0 0 0.04">
-          <inertial pos="0 0 0" mass="0.08"/>
-          <geom type="cylinder" size="0.009 0.03" material="hand_material"/>
-          <joint name="right_hand_joint_5" type="hinge" axis="1 0 0" range="-1.57 1.57" damping="0.05"/>
-
-          <body name="right_hand_link_6" pos="0 0 0.035">
-            <inertial pos="0 0 0" mass="0.06"/>
-            <geom type="cylinder" size="0.008 0.025" material="hand_material"/>
-            <joint name="right_hand_joint_6" type="hinge" axis="1 0 0" range="-1.57 1.57" damping="0.05"/>
-
-            <body name="right_hand_link_7" pos="0 0 0.03">
-              <inertial pos="0 0 0" mass="0.05"/>
-              <geom type="cylinder" size="0.007 0.02" material="hand_material"/>
-              <joint name="right_hand_joint_7" type="hinge" axis="1 0 0" range="-1.57 1.57" damping="0.05"/>
-
-              <site name="right_index_touch" type="sphere" size="0.005" pos="0 0 0.02" material="blue"/>
-              <site name="right_index_touch_1" type="sphere" size="0.005" pos="0 0.01 0.02" material="blue"/>
-            </body>
-          </body>
-        </body>
-      </body>
-
-      <!-- Middle finger chain -->
-      <body name="right_hand_link_8" pos="-0.04 0 0.05">
-        <inertial pos="0 0 0" mass="0.1"/>
-        <geom type="cylinder" size="0.01 0.03" material="hand_material"/>
-        <joint name="right_hand_joint_8" type="hinge" axis="1 0 0" range="-1.57 1.57" damping="0.05"/>
-
-        <body name="right_hand_link_9" pos="0 0 0.04">
-          <inertial pos="0 0 0" mass="0.08"/>
-          <geom type="cylinder" size="0.009 0.03" material="hand_material"/>
-          <joint name="right_hand_joint_9" type="hinge" axis="1 0 0" range="-1.57 1.57" damping="0.05"/>
-
-          <body name="right_hand_link_10" pos="0 0 0.035">
-            <inertial pos="0 0 0" mass="0.06"/>
-            <geom type="cylinder" size="0.008 0.025" material="hand_material"/>
-            <joint name="right_hand_joint_10" type="hinge" axis="1 0 0" range="-1.57 1.57" damping="0.05"/>
-
-            <body name="right_hand_link_11" pos="0 0 0.03">
-              <inertial pos="0 0 0" mass="0.05"/>
-              <geom type="cylinder" size="0.007 0.02" material="hand_material"/>
-              <joint name="right_hand_joint_11" type="hinge" axis="1 0 0" range="-1.57 1.57" damping="0.05"/>
-
-              <site name="right_middle_touch" type="sphere" size="0.005" pos="0 0 0.02" material="blue"/>
-              <site name="right_middle_touch_1" type="sphere" size="0.005" pos="0 0.01 0.02" material="blue"/>
-            </body>
-          </body>
-        </body>
-      </body>
-
-      <!-- Ring finger chain -->
-      <body name="right_hand_link_12" pos="-0.06 0 0.05">
-        <inertial pos="0 0 0" mass="0.1"/>
-        <geom type="cylinder" size="0.01 0.03" material="hand_material"/>
-        <joint name="right_hand_joint_12" type="hinge" axis="1 0 0" range="-1.57 1.57" damping="0.05"/>
-
-        <body name="right_hand_link_13" pos="0 0 0.04">
-          <inertial pos="0 0 0" mass="0.08"/>
-          <geom type="cylinder" size="0.009 0.03" material="hand_material"/>
-          <joint name="right_hand_joint_13" type="hinge" axis="1 0 0" range="-1.57 1.57" damping="0.05"/>
-
-          <body name="right_hand_link_14" pos="0 0 0.035">
-            <inertial pos="0 0 0" mass="0.06"/>
-            <geom type="cylinder" size="0.008 0.025" material="hand_material"/>
-            <joint name="right_hand_joint_14" type="hinge" axis="1 0 0" range="-1.57 1.57" damping="0.05"/>
-
-            <body name="right_hand_link_15" pos="0 0 0.03">
-              <inertial pos="0 0 0" mass="0.05"/>
-              <geom type="cylinder" size="0.007 0.02" material="hand_material"/>
-              <joint name="right_hand_joint_15" type="hinge" axis="1 0 0" range="-1.57 1.57" damping="0.05"/>
-
-              <site name="right_ring_touch" type="sphere" size="0.005" pos="0 0 0.02" material="blue"/>
-              <site name="right_ring_touch_1" type="sphere" size="0.005" pos="0 0.01 0.02" material="blue"/>
-            </body>
-          </body>
-        </body>
-      </body>
+    <!-- Sample vial: narrow body + wide flanged cap, FREE joint (real physics) -->
+    <body name="sample_vial" pos="0 0 0.145">
+      <freejoint name="vial_free"/>
+      <inertial pos="0 0 0.01" mass="0.03" diaginertia="3e-5 3e-5 5e-6"/>
+      <geom name="vial_body" type="cylinder" size="0.013 0.045" material="vial_red"
+            friction="1.6 0.1 0.05" solref="0.008 1" solimp="0.95 0.98 0.001"/>
+      <geom name="vial_cap" type="cylinder" size="0.032 0.007" pos="0 0 0.05" material="vial_cap"
+            friction="1.6 0.1 0.05"/>
     </body>
 
-    <!-- Sample vial (object to manipulate) -->
-    <body name="sample_vial" pos="-0.15 0.3 0.1">
-      <inertial pos="0 0 0" mass="0.05"/>
-      <!-- Cylinder body -->
-      <geom type="cylinder" size="0.01 0.03" material="red"/>
-      <!-- Box cap -->
-      <geom type="box" size="0.008 0.008 0.005" pos="0 0 0.035" material="red"/>
-    </body>
-
-    <!-- Shielded container (payload) -->
-    <body name="shielded_container" pos="0.15 0.3 0.05">
-      <inertial pos="0 0 0" mass="0.2"/>
-      <geom type="box" size="0.06 0.08 0.04" material="blue"/>
+    <!-- Shielded container (drop target): wide open bin the hand can reach into -->
+    <body name="shielded_container" pos="0.32 0 0">
+      <geom type="box" size="0.09 0.09 0.005" pos="0 0 0.005" material="container_mat"/>
+      <geom type="box" size="0.09 0.006 0.04" pos="0 0.09 0.04" material="container_mat"/>
+      <geom type="box" size="0.09 0.006 0.04" pos="0 -0.09 0.04" material="container_mat"/>
+      <geom type="box" size="0.006 0.09 0.04" pos="0.09 0 0.04" material="container_mat"/>
+      <geom type="box" size="0.006 0.09 0.04" pos="-0.09 0 0.04" material="container_mat"/>
     </body>
   </worldbody>
-
-  <actuator>
-    <!-- Left hand motors -->
-    <motor name="left_hand_motor_0" joint="left_hand_joint_0" gear="1" ctrlrange="-1.0 1.0"/>
-    <motor name="left_hand_motor_1" joint="left_hand_joint_1" gear="1" ctrlrange="-1.0 1.0"/>
-    <motor name="left_hand_motor_2" joint="left_hand_joint_2" gear="1" ctrlrange="-1.0 1.0"/>
-    <motor name="left_hand_motor_3" joint="left_hand_joint_3" gear="1" ctrlrange="-1.0 1.0"/>
-    <motor name="left_hand_motor_4" joint="left_hand_joint_4" gear="1" ctrlrange="-1.0 1.0"/>
-    <motor name="left_hand_motor_5" joint="left_hand_joint_5" gear="1" ctrlrange="-1.0 1.0"/>
-    <motor name="left_hand_motor_6" joint="left_hand_joint_6" gear="1" ctrlrange="-1.0 1.0"/>
-    <motor name="left_hand_motor_7" joint="left_hand_joint_7" gear="1" ctrlrange="-1.0 1.0"/>
-    <motor name="left_hand_motor_8" joint="left_hand_joint_8" gear="1" ctrlrange="-1.0 1.0"/>
-    <motor name="left_hand_motor_9" joint="left_hand_joint_9" gear="1" ctrlrange="-1.0 1.0"/>
-    <motor name="left_hand_motor_10" joint="left_hand_joint_10" gear="1" ctrlrange="-1.0 1.0"/>
-    <motor name="left_hand_motor_11" joint="left_hand_joint_11" gear="1" ctrlrange="-1.0 1.0"/>
-    <motor name="left_hand_motor_12" joint="left_hand_joint_12" gear="1" ctrlrange="-1.0 1.0"/>
-    <motor name="left_hand_motor_13" joint="left_hand_joint_13" gear="1" ctrlrange="-1.0 1.0"/>
-    <motor name="left_hand_motor_14" joint="left_hand_joint_14" gear="1" ctrlrange="-1.0 1.0"/>
-    <motor name="left_hand_motor_15" joint="left_hand_joint_15" gear="1" ctrlrange="-1.0 1.0"/>
-
-    <!-- Right hand motors -->
-    <motor name="right_hand_motor_0" joint="right_hand_joint_0" gear="1" ctrlrange="-1.0 1.0"/>
-    <motor name="right_hand_motor_1" joint="right_hand_joint_1" gear="1" ctrlrange="-1.0 1.0"/>
-    <motor name="right_hand_motor_2" joint="right_hand_joint_2" gear="1" ctrlrange="-1.0 1.0"/>
-    <motor name="right_hand_motor_3" joint="right_hand_joint_3" gear="1" ctrlrange="-1.0 1.0"/>
-    <motor name="right_hand_motor_4" joint="right_hand_joint_4" gear="1" ctrlrange="-1.0 1.0"/>
-    <motor name="right_hand_motor_5" joint="right_hand_joint_5" gear="1" ctrlrange="-1.0 1.0"/>
-    <motor name="right_hand_motor_6" joint="right_hand_joint_6" gear="1" ctrlrange="-1.0 1.0"/>
-    <motor name="right_hand_motor_7" joint="right_hand_joint_7" gear="1" ctrlrange="-1.0 1.0"/>
-    <motor name="right_hand_motor_8" joint="right_hand_joint_8" gear="1" ctrlrange="-1.0 1.0"/>
-    <motor name="right_hand_motor_9" joint="right_hand_joint_9" gear="1" ctrlrange="-1.0 1.0"/>
-    <motor name="right_hand_motor_10" joint="right_hand_joint_10" gear="1" ctrlrange="-1.0 1.0"/>
-    <motor name="right_hand_motor_11" joint="right_hand_joint_11" gear="1" ctrlrange="-1.0 1.0"/>
-    <motor name="right_hand_motor_12" joint="right_hand_joint_12" gear="1" ctrlrange="-1.0 1.0"/>
-    <motor name="right_hand_motor_13" joint="right_hand_joint_13" gear="1" ctrlrange="-1.0 1.0"/>
-    <motor name="right_hand_motor_14" joint="right_hand_joint_14" gear="1" ctrlrange="-1.0 1.0"/>
-    <motor name="right_hand_motor_15" joint="right_hand_joint_15" gear="1" ctrlrange="-1.0 1.0"/>
-  </actuator>
 </mujoco>
